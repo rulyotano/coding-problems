@@ -13,7 +13,7 @@ def binary_search(orderList, compare):
         if startIndex > endIndex:
             return -1
         if startIndex == endIndex:
-            return compare(orderList[startIndex], startIndex)
+            return startIndex if compare(orderList[startIndex], startIndex) == 0 else -1
         if endIndex - startIndex == 1:
             return startIndex if compare(orderList[startIndex], startIndex) == 0 else (endIndex if compare(orderList[endIndex], endIndex) == 0 else -1)
 
@@ -32,11 +32,20 @@ def binary_search(orderList, compare):
     return recursion_search(0, len(orderList) - 1)
 
 
-def is_insert_index(insertItem, collection, index):
+def is_insert_index(insertItem, collection, index, insert_after=False):
     testItem = collection[index]
-    if insertItem == testItem:
-        return 0
-    if insertItem < testItem and (index == 0 or insertItem > collection[index - 1]):
+
+    def compare_equal():
+        return not insert_after and insertItem == testItem
+
+    def is_greater(left, right):
+        return left >= right if insert_after else left > right
+
+    if compare_equal():
         return 0
 
-    return insertItem - testItem
+    if insertItem < testItem and (index == 0 or is_greater(insertItem, collection[index - 1])):
+        return 0
+
+    comapre_result = insertItem - testItem
+    return comapre_result if not insert_after or comapre_result != 0 else 1
