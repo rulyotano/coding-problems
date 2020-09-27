@@ -6,7 +6,6 @@ import math
 from common.binary_search import binary_search, is_insert_index
 from common.trie import Trie
 
-
 class DataItem:
     def __init__(self, index, sum):
         self.index = index
@@ -117,9 +116,7 @@ if __name__ == '__main__':
 
     s = int(raw_input())
 
-    print('creating trie')
     trie = build_trie(n, genes, health)
-    print('trie created')
 
     min = 100000000000
     max = 0
@@ -132,8 +129,6 @@ if __name__ == '__main__':
         last = int(firstLastd[1])
 
         d = firstLastd[2]
-
-        print('string ' + d)
 
         current_count = count_health(trie, first, last, d)
 

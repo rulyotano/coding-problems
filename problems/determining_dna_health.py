@@ -3,77 +3,27 @@ import re
 import random
 import os
 import math
-# from common.string_matching import kmp, kmp_initialize_suffix_prefix_array
-
-# import
-
-
-def kmp(pattern, text, suffix_preffix_array, one_result=False):
-    if pattern == '':
-        return []
-
-    m = len(pattern)
-    n = len(text)
-
-    i = 0
-    j = 0
-    result = []
-    while i < n:
-        if pattern[j] == text[i]:
-            i += 1
-            j += 1
-
-        if j == m:
-            result.append(i - j)
-            if one_result:
-                return result
-            j = suffix_preffix_array[j - 1]
-        elif i < n and pattern[j] != text[i]:
-            if j != 0:
-                j = suffix_preffix_array[j - 1]
-            else:
-                i += 1
-
-    return result
-
-
-def kmp_initialize_suffix_prefix_array(pattern):
-    n = len(pattern)
-    suffix_prefix_array = [0 for _ in range(n)]
-
-    l = 0
-    i = 1
-    while i < n:
-        c = pattern[i]
-        if pattern[l] == c:
-            l += 1
-            suffix_prefix_array[i] = l
-            i += 1
-        else:
-            if l > 0:
-                l = suffix_prefix_array[l - 1]
-            else:
-                suffix_prefix_array[i] = 0
-                i += 1
-
-    return suffix_prefix_array
-# end import
+from common.string_matching import kmp, kmp_initialize_suffix_prefix_array
+from common.trie import Trie
 
 
 def count_health(genes_data, firstIndex, lastIndex, stream):
     total_health = 0
-    genes_count_cache = {}
+    genes_count_cache = Trie()
 
     for i in range(firstIndex, lastIndex + 1):
         gene = genes_data.genes[i]
         health = genes_data.health[i]
 
-        if not gene in genes_count_cache:
+        gene_count_cache_node = genes_count_cache.find_node(gene)
+
+        if gene_count_cache_node == None:
             prefix_array = genes_data.prefix_arrays[i]
             appear_positions = kmp(gene, stream, prefix_array)
-            genes_count_cache[gene] = len(appear_positions)
+            gene_count_cache_node = genes_count_cache.add(gene)
+            gene_count_cache_node.value = len(appear_positions)
 
-        total_health += genes_count_cache[gene] * health
+        total_health += gene_count_cache_node.value * health
 
     return total_health
 
@@ -95,7 +45,19 @@ if __name__ == '__main__':
 
     s = int(raw_input())
 
-    prefix_arrays = [kmp_initialize_suffix_prefix_array(g) for g in genes]
+    genes_prefix_cache_trie = Trie()
+    prefix_arrays = [None for g in genes]
+
+    # calculate the prefix arrays by using a trie as cache
+    for i in range(len(genes)):
+        gene = genes[i]
+        cache_trie_node = genes_prefix_cache_trie.find_node(gene)
+        if cache_trie_node != None:
+            prefix_arrays[i] = cache_trie_node.value
+        else:
+            prefix_arrays[i] = kmp_initialize_suffix_prefix_array(gene)
+            cache_trie_node = genes_prefix_cache_trie.add(gene)
+            cache_trie_node.value = prefix_arrays[i]
 
     genes_data = GenesData(genes, health, prefix_arrays)
 
@@ -110,6 +72,8 @@ if __name__ == '__main__':
         last = int(firstLastd[1])
 
         d = firstLastd[2]
+
+        print('analizing string '+d)
 
         current_count = count_health(genes_data, first, last, d)
 
