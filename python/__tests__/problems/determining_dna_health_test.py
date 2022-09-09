@@ -1,5 +1,5 @@
 from common.trie import Trie
-from problems.determining_dna_health import DataItem, add_health_to_gene_trie, build_trie, count_health_in_node_value
+from problems.determining_dna_health.determining_dna_health import DataItem, add_health_to_gene_trie, build_trie, count_health_in_node_value
 
 
 def test_creation_data_item():
