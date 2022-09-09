@@ -7,15 +7,18 @@ public class DeterminingDnaHealth
     int n = Convert.ToInt32(Console.ReadLine().Trim());
 
     Gene[] genes = Console.ReadLine().TrimEnd().Split(' ').Select((g, i) => new Gene { Value = g, Index = i }).ToArray();
-
-    Console.ReadLine().TrimEnd().Split(' ').Select((healthTemp, i) => { genes[i].Health = Convert.ToInt32(healthTemp); return 1; }).ToList();
+    Console.ReadLine().TrimEnd().Split(' ').Select((healthTemp, i) =>
+    {
+      genes[i].Health = Convert.ToInt32(healthTemp);
+      genes[i].AccumulativeHealth = (i > 0 ? genes[i - 1].AccumulativeHealth : 0) + genes[i].Health;
+      return 1;
+    }).ToList();
 
     int s = Convert.ToInt32(Console.ReadLine().Trim());
 
-    var maxHealthSum = 0;
-    var minHealthSum = int.MaxValue;
+    var maxHealthSum = 0L;
+    var minHealthSum = long.MaxValue;
     for (int sItr = 0; sItr < s; sItr++)
-
     {
       string[] firstMultipleInput = Console.ReadLine().TrimEnd().Split(' ');
 
@@ -25,12 +28,17 @@ public class DeterminingDnaHealth
 
       string d = firstMultipleInput[2];
 
-      var prefixIndexes = BuildPrefixMap(d, new[] { 1, 2 });
-      var currentHealthSum = 0;
+      const int maxPrefix = 4;
+      var prefixIndexes = BuildPrefixMap(d, maxPrefix);
+      var currentHealthSum = 0L;
 
       foreach (var gene in genes.Skip(first).Take(last - first + 1))
       {
-        var prefix = gene.GetPrefix();
+        if (currentHealthSum >= minHealthSum
+          && genes[last].AccumulativeHealth - genes[first].AccumulativeHealth + genes[first].Health < maxHealthSum)
+          break;
+
+        var prefix = gene.GetPrefix(maxPrefix);
         if (prefixIndexes.ContainsKey(prefix))
         {
           foreach (var possibleIndex in prefixIndexes[prefix])
@@ -65,13 +73,13 @@ public class DeterminingDnaHealth
     Console.WriteLine($"{minHealthSum} {maxHealthSum}");
   }
 
-  private static IDictionary<string, IList<int>> BuildPrefixMap(string dnaStrand, IEnumerable<int> prefixSizes)
+  private static IDictionary<string, IList<int>> BuildPrefixMap(string dnaStrand, int maxPrefixSizes)
   {
     var result = new Dictionary<string, IList<int>>();
-    var builder = new StringBuilder();
 
-    foreach (var prefixSize in prefixSizes)
+    for (int prefixSize = 1; prefixSize <= maxPrefixSizes; prefixSize++)
     {
+      var builder = new StringBuilder();
       for (int i = 0; i <= dnaStrand.Length - prefixSize; i++)
       {
         var currentChar = dnaStrand[i];
@@ -103,6 +111,8 @@ public class DeterminingDnaHealth
 
     public int Health { get; set; }
 
-    public string GetPrefix() => Value.Length > 1 ? Value.Substring(0, 2) : Value.Substring(0, 1);
+    public double AccumulativeHealth { get; set; }
+
+    public string GetPrefix(int maxPrefixSizes) => Value.Substring(0, Math.Min(maxPrefixSizes, Value.Length));
   };
 }
