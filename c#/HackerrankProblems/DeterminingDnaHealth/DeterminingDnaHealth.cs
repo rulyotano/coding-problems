@@ -62,10 +62,10 @@ public class DeterminingDnaHealth
         Console.WriteLine($"{minHealthSum} {maxHealthSum}");
     }
 
-    private static ulong CalculateMatchValue(Trie<List<Gene>> currentTrie, int first, int last)
+    private static ulong CalculateMatchValue(Trie<GeneList> currentTrie, int first, int last)
     {
         Func<Gene, int> GetCompareFunction(int indexToSearch) => current => current.Index - indexToSearch;
-        var matchingGenes = currentTrie.Value;
+        var matchingGenes = currentTrie.Value.Genes;
         if (last < matchingGenes[0].Index) return 0;
         if (matchingGenes[matchingGenes.Count - 1].Index < first) return 0;
         if (first == last)
@@ -88,31 +88,20 @@ public class DeterminingDnaHealth
         return lastGeneMatching.AccumulativeHealth - firstGeneMatching.AccumulativeHealth + firstGeneMatching.Health;
     }
 
-    private static Trie<List<Gene>> BuildTrie(Gene[] genes)
+    private static Trie<GeneList> BuildTrie(Gene[] genes)
     {
-        var genesTrie = new Trie<List<Gene>>();
-
-        List<Gene> CollisionResolver(List<Gene> existingList, Gene gene)
-        {
-            gene.AccumulativeHealth = gene.Health + existingList[existingList.Count - 1].AccumulativeHealth;
-            existingList.Add(gene);
-            return existingList;
-        }
-
-        List<Gene> NewCreator(Gene gene) {
-            gene.AccumulativeHealth = gene.Health;
-            return new List<Gene> { gene };
-        }
-
+        var genesTrie = new Trie<GeneList>();
+        
         foreach (Gene gene in genes)
         {
-            genesTrie.Add(gene.Value, existingList => CollisionResolver(existingList, gene), () => NewCreator(gene));
+            var geneList = new GeneList(gene);
+            genesTrie.Add(gene.Value, geneList);
         }
 
         return genesTrie;
     }
 
-    class Gene
+    public class Gene
     {
         public int Index { get; set; }
 
@@ -123,7 +112,30 @@ public class DeterminingDnaHealth
         public ulong AccumulativeHealth { get; set; }
     };
 
-    public class Trie<T> where T : class
+    public class GeneList : ITrieItem
+    {
+        public GeneList(Gene gene)
+        {
+            Genes = new List<Gene> { gene };
+        }
+        public List<Gene> Genes { get; }
+        public ITrieItem ResolveCollision(ITrieItem existingItem)
+        {
+            var existingList = (GeneList) existingItem;
+            var currentGene = Genes[0];
+            currentGene.AccumulativeHealth =
+                currentGene.Health + existingList.Genes[^1].AccumulativeHealth;
+            existingList.Genes.Add(currentGene);
+            return existingList;
+        }
+    }
+
+    public interface ITrieItem
+    {
+        ITrieItem ResolveCollision(ITrieItem existingItem);
+    }
+
+    public class Trie<T> where T : class, ITrieItem
     {
         public T Value { get; private set; }
         public Trie<T>[] Children { get; }
@@ -133,11 +145,11 @@ public class DeterminingDnaHealth
 
         public Trie()
         {
-            Children = new Trie<T>['z'-'a' + 1];
+            Children = new Trie<T>['z' - 'a' + 1];
         }
 
-        public void Add(string key, Func<T, T> collisionResolver, Func<T> newCreator)
-            => AddPrivate(key, collisionResolver, newCreator, 0);
+        public void Add(string key, ITrieItem treeItem)
+            => AddPrivate(key, treeItem, 0);
 
         public T Get(string key)
         {
@@ -153,25 +165,25 @@ public class DeterminingDnaHealth
             return Children[keyCharacter - 'a'];
         }
 
-        private void AddPrivate(string key, Func<T, T> collisionResolver, Func<T> newCreator, int currentIndex = 0)
+        private void AddPrivate(string key, ITrieItem treeItem, int currentIndex = 0)
         {
             if (string.IsNullOrEmpty(key)) return;
             if (currentIndex == key.Length)
             {
-                Value = IsMatch ? collisionResolver(Value) : newCreator();
+                Value = (T)(IsMatch ? treeItem.ResolveCollision(Value) : treeItem);
                 return;
             }
-            var currentCharacter = key[currentIndex]; 
+            var currentCharacter = key[currentIndex];
             var currentChildIndex = currentCharacter - 'a';
             var child = Children[currentChildIndex];
-            
+
             if (child == null)
             {
                 child = new Trie<T>();
                 Children[currentChildIndex] = child;
             }
 
-            child.AddPrivate(key, collisionResolver, newCreator, currentIndex + 1);
+            child.AddPrivate(key, treeItem, currentIndex + 1);
         }
 
         private Trie<T> GetNodePrivate(string key, int currentIndex = 0)
