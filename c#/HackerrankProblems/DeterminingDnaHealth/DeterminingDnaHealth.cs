@@ -64,17 +64,16 @@ public class DeterminingDnaHealth
 
     private static ulong CalculateMatchValue(Trie<GeneList> currentTrie, int first, int last)
     {
-        Func<Gene, int> GetCompareFunction(int indexToSearch) => current => current.Index - indexToSearch;
         var matchingGenes = currentTrie.Value.Genes;
         if (last < matchingGenes[0].Index) return 0;
         if (matchingGenes[matchingGenes.Count - 1].Index < first) return 0;
         if (first == last)
         {
-            var matchingDnaIndex = SortedArray.BinarySearch(matchingGenes, GetCompareFunction(first));
+            var matchingDnaIndex = SortedArray.BinarySearch(matchingGenes, first);
             return matchingDnaIndex == SortedArray.NotFound ? 0 : matchingGenes[matchingDnaIndex].Health;
         }
-        var firstMatchingIndex = SortedArray.FindInsertIndex(matchingGenes, GetCompareFunction(first));
-        var lastMatchingIndex = SortedArray.FindInsertIndex(matchingGenes, GetCompareFunction(last));
+        var firstMatchingIndex = SortedArray.FindInsertIndex(matchingGenes, first);
+        var lastMatchingIndex = SortedArray.FindInsertIndex(matchingGenes, last);
         var finalLastMatchingIndex = lastMatchingIndex == matchingGenes.Count || matchingGenes[lastMatchingIndex].Index > last ? lastMatchingIndex - 1 : lastMatchingIndex;
         if (firstMatchingIndex > finalLastMatchingIndex) return 0;
         if (firstMatchingIndex == finalLastMatchingIndex)
@@ -208,34 +207,34 @@ public class DeterminingDnaHealth
     {
         public const int NotFound = -1;
 
-        public static int BinarySearch<T>(IList<T> collection, Func<T, int> compareFunction)
+        public static int BinarySearch(IList<Gene> collection, int indexToSearch)
         {
-            var (foundIndex, _) = BinarySearch(collection, compareFunction, 0, collection.Count - 1);
+            var (foundIndex, _) = BinarySearch(collection, indexToSearch, 0, collection.Count - 1);
             return foundIndex;
         }
 
-        public static int FindInsertIndex<T>(IList<T> collection, Func<T, int> compareFunction)
+        public static int FindInsertIndex(IList<Gene> collection, int indexToSearch)
         {
             if (collection.Count == 0) return 0;
-            var (_, bestIndex) = BinarySearch(collection, compareFunction, 0, collection.Count - 1);
+            var (_, bestIndex) = BinarySearch(collection, indexToSearch, 0, collection.Count - 1);
             return bestIndex;
         }
 
-        private static (int foundIndex, int bestIndex) BinarySearch<T>(IList<T> collection, Func<T, int> compareFunction, int start, int end)
+        private static (int foundIndex, int bestIndex) BinarySearch(IList<Gene> collection, int indexToSearch, int start, int end)
         {
             if (start > end) return (NotFound, NotFound);
             if (start == end)
             {
-                var whenEqualsComapreResult = compareFunction(collection[start]);
+                var whenEqualsComapreResult = collection[start].Index - indexToSearch;
                 if (whenEqualsComapreResult == 0) return (start, start);
                 var currentIsGreater = whenEqualsComapreResult > 0;
                 return currentIsGreater ? (NotFound, start) : (NotFound, start + 1);
             }
             if (end - start == 1)
             {
-                var compareStartResult = compareFunction(collection[start]);
+                var compareStartResult = collection[start].Index - indexToSearch;
                 if (compareStartResult == 0) return (start, start);
-                var compareEndResult = compareFunction(collection[end]);
+                var compareEndResult = collection[end].Index - indexToSearch;
                 if (compareEndResult == 0) return (end, end);
                 var isLowerThanStart = compareStartResult > 0;
                 if (isLowerThanStart) return (NotFound, start);
@@ -246,7 +245,7 @@ public class DeterminingDnaHealth
 
             var middIndex = (start + end) / 2;
             var middElement = collection[middIndex];
-            var compareResult = compareFunction(middElement);
+            var compareResult = middElement.Index - indexToSearch;
             if (compareResult == 0)
             {
                 return (middIndex, middIndex);
@@ -254,10 +253,10 @@ public class DeterminingDnaHealth
 
             if (compareResult > 0)
             {
-                return BinarySearch(collection, compareFunction, start, middIndex);
+                return BinarySearch(collection, indexToSearch, start, middIndex);
             }
 
-            return BinarySearch(collection, compareFunction, middIndex, end);
+            return BinarySearch(collection, indexToSearch, middIndex, end);
         }
     }
 }
