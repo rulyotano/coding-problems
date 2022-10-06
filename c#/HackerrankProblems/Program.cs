@@ -1,4 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-DeterminingDnaHealth.Main(new string[] {});
+var solution = new Solution();
+
+Console.WriteLine(solution.NumRollsToTarget(30, 30, 500));
 Console.WriteLine("Hello, World!");
