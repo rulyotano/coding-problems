@@ -2,6 +2,8 @@
 
 var solution = new Solution();
 
+solution.CanPartitionKSubsets(new int[] { 4,3,2,3,5,2,1 }, 4);
+
 Result.twoPluses(new List<string> {
   "GGGGGG",
   "GBBBGB",
