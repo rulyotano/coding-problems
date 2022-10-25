@@ -1,8 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-var solution = new PartitionEqualSubsetSumSolution();
+var solution = new CafeteriaSolution();
 
-solution.CanPartition(new int[] { 1, 2, 5 });
+solution.getMaxAdditionalDinersCount(10, 8, 1, new long[] { 1 });
 
 //Result.twoPluses(new List<string> {
 //  "GGGGGG",
