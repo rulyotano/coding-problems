@@ -1,8 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-var solution = new CafeteriaSolution();
+var solution = new UniformIntegersSolution();
 
-solution.getMaxAdditionalDinersCount(10, 8, 1, new long[] { 1 });
+solution.getUniformIntegerCountInInterval(75, 300);
 
 //Result.twoPluses(new List<string> {
 //  "GGGGGG",
