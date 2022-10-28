@@ -3,3 +3,6 @@ Problem URL: [Director of Photography](https://www.metacareers.com/profile/codin
 > tags: `#array`, `#algorithm`
 
 1st try took: 50mins
+
+Second part. The same but 1<= N <= 300000
+took hours. Solved counting items shifting windows.

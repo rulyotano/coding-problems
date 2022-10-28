@@ -9,8 +9,8 @@ class DirectorOfPhotographySolution
         var count = 0;
         for (int i = 0; i <= maxI; i++)
         {
-            if (C[i] != 'p' && C[i] != 'B') continue;
-            var nextToFind = C[i] == 'p' ? 'B' : 'p';
+            if (C[i] != 'P' && C[i] != 'B') continue;
+            var nextToFind = C[i] == 'P' ? 'B' : 'P';
             var maxJ = Math.Min(i + Y, N - 1);
             for (int j = i + X; j <= maxJ; j++)
             {
