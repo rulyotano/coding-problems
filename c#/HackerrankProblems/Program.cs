@@ -1,8 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-var solution = new UniformIntegersSolution();
+var solution = new MissingMailSolution();
 
-solution.getUniformIntegerCountInInterval(75, 300);
+solution.getMaxExpectedProfit(5, new int[] { 10, 2, 8, 6, 4 }, 3, 0.15);
+
+// N = 5
+// V = [10, 2, 8, 6, 4]
+// C = 5
+// S = 1.0
 
 //Result.twoPluses(new List<string> {
 //  "GGGGGG",
