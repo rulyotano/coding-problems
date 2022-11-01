@@ -1,7 +1,7 @@
-class MissingMailSolution
+class MissingMailSolution1
 {
 
-  public double getMaxExpectedProfit(int N, int[] V, int C, double S)
+  public double getMaxExpectedProfit1(int N, int[] V, int C, double S)
   {
     var solveCache = new Dictionary<(int, int), double>();
     var previousCache = new Dictionary<(int, int), double>();
