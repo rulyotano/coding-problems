@@ -3,6 +3,7 @@ class RabbitHole1_BadUnderstoodSolution
 
   public int getMaxVisitableWebpages(int N, int[] L)
   {
+    var t = new SortedSet<int>();
     var maxCount = 0;
     var groupCounts = new Dictionary<int, int>();
     var marks = new int[L.Length];
