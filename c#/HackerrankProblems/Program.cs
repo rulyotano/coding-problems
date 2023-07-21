@@ -1,8 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-var solution = new MissingMailSolution1();
+var solution = new ZigzagConversionSolution().Convert("PAYPALISHIRING", 2);
 
-solution.getMaxExpectedProfit1(5, new int[] { 10, 2, 8, 6, 4 }, 3, 0.15);
+
 
 // N = 5
 // V = [10, 2, 8, 6, 4]
