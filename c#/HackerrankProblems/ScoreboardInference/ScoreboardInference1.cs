@@ -1,4 +1,4 @@
-class ScoreboardInference1Solution {
+class ScoreboardInference1Solution1 {
   
   public int getMinProblemCount(int N, int[] S) {
     var maxEven = 0;
