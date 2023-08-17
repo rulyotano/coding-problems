@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-var solution = new ZigzagConversionSolution().Convert("PAYPALISHIRING", 2);
+var solution = new BulbSwitcherSolution().BulbSwitchPrimes(30);
+System.Console.WriteLine(solution.ToString());
 
 
 
