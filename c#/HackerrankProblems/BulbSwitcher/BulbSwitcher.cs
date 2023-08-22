@@ -2,6 +2,10 @@ using System.Collections;
 
 public class BulbSwitcherSolution
 {
+  public int BulbSwitch(int n)
+  {
+    return (int)Math.Floor(Math.Sqrt(n));
+  }
   // 33/35 cases
   public int BulbSwitch1(int n)
   {
