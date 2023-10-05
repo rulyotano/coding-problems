@@ -1,9 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-var solution = new BulbSwitcherSolution().BulbSwitchPrimes(30);
-System.Console.WriteLine(solution.ToString());
+// var solution = new MissingMailSolution1();
 
+// solution.getMaxExpectedProfit1(5, new int[] { 10, 2, 8, 6, 4 }, 3, 0.15);
 
+JaneaSystems.Solution.PrintRepetitions(new char[] { 'a', 'b', 'c', 'd', 'e', 'g' }, 2);
+
+Console.WriteLine(JaneaSystems.Solution.FindBestGain(new int[] { 900, 550, 400, 200, 150 }));
 
 // N = 5
 // V = [10, 2, 8, 6, 4]
